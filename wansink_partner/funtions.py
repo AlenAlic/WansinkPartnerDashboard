@@ -2,7 +2,7 @@ from flask import json, current_app
 from wansink_partner import db
 from wansink_partner.models import Authentication, Employees, SimplicateTrelloCodes, ProjectTrelloCards, \
     ProjectTrelloResults, ProjectTrelloResultsCard
-from wansink_partner.values import GET, POST, PUT, BOEKJAAR, IB, BILLING_METHOD, TODO_SLUITEN, SIMPLICATE_LIMIT
+from wansink_partner.values import GET, POST, PUT, IB, BILLING_METHOD, TODO_SLUITEN, SIMPLICATE_LIMIT
 import requests as http_requests
 import time
 from datetime import date, timedelta
@@ -80,7 +80,10 @@ def get_simplicate_projects(future=False):
             projects = simplicate_request(api=("projects", "project"),
                                           params={"q[created][ge]": yesterday.isoformat(),
                                                   "q[created][le]": today.isoformat(), "offset": i})
-            projects_dump.extend(projects)
+            if projects is not None:
+                projects_dump.extend(projects)
+            else:
+                projects = []
             if len(projects) == 0:
                 break
     return projects_dump

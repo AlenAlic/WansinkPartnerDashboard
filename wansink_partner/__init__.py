@@ -109,6 +109,7 @@ def create_app():
             db.session.add(Maandwerk())
             db.session.add(ProjectTrelloCards())
             db.session.commit()
+            generate_auth()
 
     # Shell command
     def generate_auth():
