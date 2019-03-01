@@ -1,0 +1,49 @@
+<style>
+.text-top>td    {vertical-align:top !important;}
+</style>
+<div class="card ">
+    <div class="card-header ">
+        <h5 class="card-title">Beschikbare borden en lijsten</h5>
+        <span class="card-category no-capitalize"><i class="fa fa-info-circle"></i> Overzicht van alle beschikbare borden en open lijsten. De id's kunnen hier gevonden worden.</span>
+    </div>
+    <div class="card-body ">
+        <input class="form-control" id="myInput" type="text" placeholder="Search..">
+        <br>
+        <table class="table" id="myTable">
+            <colgroup>
+                <col span="1" style="width: 25%;">
+                <col span="1" style="width: 25%;">
+                <col span="1" style="width: 25%;">
+                <col span="1" style="width: 25%;">
+            </colgroup>
+            <thead class=" text-warning">
+                <tr>
+                    <th>Bord</th>
+                    <th>Bord id</th>
+                    <th>Lijst</th>
+                    <th>Lijst id</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for board in boards %}
+                <tr class="text-top">
+                    <td>{{board.name}}</td>
+                    <td>{{board.id}}</td>
+                    <td>{% for l in board.lists %}{{l.name}}{% if not loop.last %}<br/>{% endif %}{% endfor %}</td>
+                    <td>{% for l in board.lists %}{{l.id}}{% if not loop.last %}<br/>{% endif %}{% endfor %}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+<script>
+$(document).ready(function(){
+  $("#myInput").on("keyup", function() {
+    var value = $(this).val().toLowerCase();
+    $("#myTable tr").filter(function() {
+      $(this).toggle($(this).text().toLowerCase().indexOf(value) > -1)
+    });
+  });
+});
+</script>

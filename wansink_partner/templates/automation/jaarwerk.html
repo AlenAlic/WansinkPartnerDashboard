@@ -1,0 +1,61 @@
+{% extends "paper_base.html" %}
+
+{% block app_content %}
+<div class="card ">
+    <div class="card-header ">
+        <h5 class="card-title">Jaarwerk automatisering</h5>
+        <span class="card-category no-capitalize">
+            <i class="fa fa-info-circle"></i> De Jaarwerk automatisering <b>verplaatst</b> kaarten uit een maandelijkse
+            lijst (bijvoorbeeld: <i>Oktober 2018</i>) van het bord <u>{% if jw.source_board_name is none %}<b>GEEN BORD GEVONDEN</b>{% else %}{{jw.source_board_name}}{% endif %}</u>
+            naar de lijst <u>{% if jw.target_list_name is none %}<b>GEEN LIJST GEVONDEN</b>{% else %}{{jw.target_list_name}}{% endif %}</u> van
+            het bord <u>{% if jw.target_board_name is none %}<b>GEEN BORD GEVONDEN</b>{% else %}{{jw.target_board_name}}{% endif %}</u>.
+        </span>
+    </div>
+    <div class="card-body ">
+        <form class="form" method="POST" enctype="multipart/form-data">
+            {{ form.hidden_tag() }}
+            {{ wtf.form_field(form.source_board_id) }}
+            {{ wtf.form_field(form.target_board_id) }}
+            {{ wtf.form_field(form.target_list_id) }}
+            {{ wtf.form_field(form.jaarwerk_submit) }}
+        </form>
+    </div>
+</div>
+<div class="card ">
+    <div class="card-header ">
+        <h5 class="card-title">Gevonden maandelijkse lijsten</h5>
+        <span class="card-category no-capitalize">
+            <i class="fa fa-info-circle"></i>
+            {% if source_lists is none %}
+            Er is geen bord ingevuld waarvan de lijsten worden gekopieerd. De beschikbare lijsten kunnen nu niet gecontroleerd worden.
+            {% else %}
+            Dit is een lijst van de gevonden lijsten op het bord <u>{{jw.source_board_name}}</u>. Deze lijst controllert niet verder dan 3 jaar vooruit. <br/>
+            Als een lijst die wel op Trello staat hieruit ontbreekt, kijk dan na of de naam goed getypt is.<br/>
+            {% endif %}
+        </span>
+    </div>
+    <div class="card-body ">
+        {% if lists|length > 0 %}
+        <table class="table">
+            <thead class=" text-warning">
+                <tr>
+                    <th>Naam</th>
+                    <th>Trello id</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for l in lists %}
+                <tr>
+                    <td>{{l.name}}</td>
+                    <td>{{l.id}}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        {% else %}
+        <p>Er zijn geen lijsten op het bord <u>{{jw.source_board_name}}</u> gevonden.</p>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}
+

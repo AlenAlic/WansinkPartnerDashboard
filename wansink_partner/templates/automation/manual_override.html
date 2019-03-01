@@ -1,0 +1,51 @@
+{% extends "paper_base.html" %}
+
+{% block app_content %}
+<div class="card ">
+    <div class="card-header ">
+        <h5 class="card-title">Handmatig kaarten aanmaken vanuit projecten.</h5>
+        <span class="card-category no-capitalize">
+            <i class="fa fa-info-circle"></i> Hieronder de projecten die in de laatste periode aangemaakt zijn in Simplicate.
+             Als er nog <b>geen</b> kaarten voor zijn aangemaakt, kan dat met de knop helemaal rechts. Ontbreekt deze knop, zijn de kaarten al aangemaakt.
+        </span>
+    </div>
+    <div class="card-body ">
+        {% if projects|length > 0 %}
+        <table class="table">
+            <thead class=" text-warning">
+                <tr>
+                    <th>Project naam</th>
+                    <th>Persoon/Organsatie</th>
+                    <th>ID</th>
+                    <th>Datum aanmaak project</th>
+                    <th></th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for project in projects %}
+                <tr class="text-top">
+                    <td>{{project.name}}</td>
+                    {% if "organization" in project %}
+                    <td>{{project.organization.name}}</td>
+                    {% elif "person" in project %}
+                    <td>{{project.person.full_name}}</td>
+                    {% else %}
+                    <td>Geen persoon of orga gevonden</td>
+                    {% endif %}
+                    <td>{{project.id}}</td>
+                    <td>{{project.created_at}}</td>
+                    <td align="right">
+                        {% if project.id in projects_not_in_database_ids %}
+                        <a class="btn btn-warning btn-sm" href="{{ url_for('automation.manual_project_trello_cards', project_id=project.id) }}">Maak kaarten aan</a>
+                        {% endif %}
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        {% else %}
+        <p>Er zijn geen projecten om weer te geven.</p>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

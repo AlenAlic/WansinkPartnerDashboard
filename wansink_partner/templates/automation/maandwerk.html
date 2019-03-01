@@ -1,0 +1,32 @@
+{% extends "paper_base.html" %}
+
+{% block app_content %}
+<div class="card ">
+    <div class="card-header ">
+        <h5 class="card-title">Maandwerk</h5>
+        <span class="card-category no-capitalize">
+            <i class="fa fa-info-circle"></i> De Maandwerk automatisering <b>kopieert</b> kaarten uit van de lijst 
+            <u>{% if mw.source_list_month_name is none %}<b>GEEN LIJST GEVONDEN</b>{% else %}{{mw.source_list_month_name}}{% endif %}</u> of
+            <u>{% if mw.source_list_quarter_name is none %}<b>GEEN LIJST GEVONDEN</b>{% else %}{{mw.source_list_quarter_name}}{% endif %}</u>
+            van het bord <u>{% if mw.source_board_name is none %}<b>GEEN BORD GEVONDEN</b>{% else %}{{mw.source_board_name}}{% endif %}</u>
+            naar de lijst <u>{% if mw.target_list_name is none %}<b>GEEN LIJST GEVONDEN</b>{% else %}{{mw.target_list_name}}{% endif %}</u> van
+            het bord <u>{% if mw.target_board_name is none %}<b>GEEN BORD GEVONDEN</b>{% else %}{{mw.target_board_name}}{% endif %}</u>.<br/>
+            Vervolgends worden de kaarten van de lijst <u>{% if mw.source_list_name is none %}<b>GEEN LIJST GEVONDEN</b>{% else %}{{mw.source_list_name}}{% endif %}</u>
+            <b>verplaatst</b> naar de lijst <u>{% if mw.target_list_name is none %}<b>GEEN LIJST GEVONDEN</b>{% else %}{{mw.target_list_name}}{% endif %}</u> op
+            het bord <u>{% if mw.target_board_name is none %}<b>GEEN BORD GEVONDEN</b>{% else %}{{mw.target_board_name}}{% endif %}</u>.
+        </span>
+    </div>
+    <div class="card-body ">
+        <form class="form" method="POST" enctype="multipart/form-data">
+            {{ form.hidden_tag() }}
+            {{ wtf.form_field(form.source_board_id) }}
+            {{ wtf.form_field(form.source_list_month_id) }}
+            {{ wtf.form_field(form.source_list_quarter_id) }}
+            {{ wtf.form_field(form.target_board_id) }}
+            {{ wtf.form_field(form.source_list_id) }}
+            {{ wtf.form_field(form.target_list_id) }}
+            {{ wtf.form_field(form.maandwerk_submit) }}
+        </form>
+    </div>
+</div>
+{% endblock %}

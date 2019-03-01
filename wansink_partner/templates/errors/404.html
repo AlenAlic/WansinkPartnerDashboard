@@ -1,0 +1,6 @@
+{% extends "errors/base_error.html" %}
+
+{% block app_content %}
+<h1>Deze pagina bestaat niet.</h1>
+<p>Klik <a href="{{ url_for('main.index') }}">hier</a> om terug naar het dashboard te keren.</p>
+{% endblock %}

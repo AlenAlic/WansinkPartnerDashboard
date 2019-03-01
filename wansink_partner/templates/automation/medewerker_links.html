@@ -1,0 +1,138 @@
+{% extends "paper_base.html" %}
+
+{% block app_content %}
+<div class="card ">
+    <div class="card-header ">
+        <h5 class="card-title">Medewerkers met link tussen Trello en Simplicate</h5>
+        <span class="card-category no-capitalize"><i class="fa fa-hashtag"></i> {{employees|length}}</span>
+    </div>
+    <div class="card-body ">
+        {% if employees|length > 0 %}
+        <table class="table">
+            <colgroup>
+                <col span="1" style="width: 30%;">
+                <col span="1" style="width: 30%;">
+                <col span="1" style="width: 35%;">
+                <col span="1" style="width: 5%;">
+            </colgroup>
+            <thead class=" text-warning">
+                <tr>
+                    <th>Naam</th>
+                    <th>Trello id</th>
+                    <th>Simplicate id</th>
+                    <th></th>
+                </tr>
+            </thead>
+            <tbody>
+            {% for employee in employees %}
+                <tr>
+                    <td>{{employee.full_name}}</td>
+                    <td>{{employee.trello_id}}</td>
+                    <td>{{employee.simplicate_id}}</td>
+                    <td>
+                        <button class="btn btn-outline-default btn-sm" data-toggle="modal" data-target="#employee-{{employee.employee_id}}"><i class="fa fa-times"></i></button>
+                        <div class="modal fade" id="employee-{{employee.employee_id}}" tabindex="-1" role="dialog" aria-labelledby="employee-label-{{employee.employee_id}}" aria-hidden="true">
+                            <div class="modal-dialog" role="document">
+                                <div class="modal-content">
+                                    <div class="modal-header">
+                                        <h5 class="modal-title" id="employee-label-{{employee.employee_id}}">Modal title</h5>
+                                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                            <span aria-hidden="true">&times;</span>
+                                        </button>
+                                    </div>
+                                    <div class="modal-body">
+                                        <p>Wil je de link van {{employee.full_name}} permanent verwijderen?</p>
+                                    </div>
+                                    <div class="modal-footer">
+                                        <button type="button" class="btn btn-default mx-1" data-dismiss="modal">Nee</button>
+                                        <a href="{{ url_for('automation.delete_employee', employee_id=employee.employee_id) }}" class="btn btn-warning mx-1">Ja</a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </td>
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+        {% else %}
+        <p>Medewerker links tussen Trello en Simplicate worden gebruikt om iemand die in een Simplicate project staat, ook als member in automatisch aangemaakte kaarten toe te voegen.</p>
+        <p>Er zijn momenteel geen links aanwezig. Gebruik de onderstaande knop om voor zover mogelijk, links automatisch aan te maken.</p>
+        <form class="form" method="POST" enctype="multipart/form-data">
+            {{ generate_form.hidden_tag() }}
+            {{ wtf.form_field(generate_form.generate_employee_links_submit) }}
+        </form>
+        {% endif %}
+    </div>
+</div>
+<div class="card ">
+    <div class="card-header ">
+        <h5 class="card-title">Voeg nieuwe link toe voor medewerkers</h5>
+        <span class="card-category no-capitalize"><i class="fa fa-info-circle"></i> Vul een naam in en de bijbehorende id's om een nieuwe link aan te maken in het systeem. De data valt uit de tabellen hieronder te halen.</span>
+    </div>
+    <div class="card-body ">
+        <form class="form" method="POST" enctype="multipart/form-data">
+            {{ form.hidden_tag() }}
+            {{ wtf.form_field(form.full_name) }}
+            {{ wtf.form_field(form.trello_id) }}
+            {{ wtf.form_field(form.simplicate_id) }}
+            {{ wtf.form_field(form.employee_submit) }}
+        </form>
+    </div>
+</div>
+<div class="card ">
+    <div class="card-header ">
+        <h5 class="card-title">Overzicht niet-gelinkte medewerkers</h5>
+    </div>
+    <div class="card-body ">
+        <div class="row">
+            <div class="col">
+                <h6>Trello</h6>
+                {% if trello_members|length > 0 %}
+                <table class="table">
+                    <thead class=" text-warning">
+                        <tr>
+                            <th>Naam</th>
+                            <th>Trello id</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                    {% for member in trello_members %}
+                        <tr>
+                            <td>{{member.fullName}}</td>
+                            <td>{{member.id}}</td>
+                        </tr>
+                    {% endfor %}
+                    </tbody>
+                </table>
+                {% else %}
+                <p>Trello heeft geen medewerkers die nog geen link hebben.</p>
+                {% endif %}
+            </div>
+            <div class="col">
+                <h6>Simplicate</h6>
+                {% if simplicate_members|length > 0 %}
+                <table class="table">
+                    <thead class=" text-warning">
+                        <tr>
+                            <th>Naam</th>
+                            <th>Simplicate id</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                    {% for member in simplicate_members %}
+                        <tr>
+                            <td>{{member.name}}</td>
+                            <td>{{member.id}}</td>
+                        </tr>
+                    {% endfor %}
+                    </tbody>
+                </table>
+                {% else %}
+                <p>Simplicate heeft geen medewerkers die nog geen link hebben.</p>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

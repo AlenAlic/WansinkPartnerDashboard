@@ -1,0 +1,207 @@
+{% extends "paper_base.html" %}
+
+{% block styles %}
+{{ super() }}
+<style>
+.card .card-footer .stats i     {color:#fff;}
+.bg-trello                      {background-color:#0079bf !important;}
+</style>
+{% endblock %}
+
+{% block app_content %}
+<div class="row">
+    <div class="col-md-6">
+        <div class="card ">
+            <div class="card-header ">
+                <h5 class="card-title">Trello samenvatting</h5>
+            </div>
+            <div class="card-body ">
+
+                <h6>Jaarwerk</h6>
+                {% if jaarwerk_result is not none %}
+                <span class="card-category no-capitalize"><i class="fa fa-history"></i> {{jaarwerk_result.timestamp.date()}}</span>
+                <p class="pre-text">{{jaarwerk_result_summary}}</p>
+                {% else %}
+                <p>Jaarwerk automatisering is nog niet uitgevoerd.</p>
+                {% endif %}
+
+                <h6>Maandwerk</h6>
+                {% if maandwerk_copy_result is not none %}
+                <span class="card-category no-capitalize"><i class="fa fa-history"></i> {{maandwerk_copy_result.timestamp.date()}}</span><br/>
+                <u>Kopiëren {{mw.source_list_month_name}}/{{mw.source_list_quarter_name}} naar {{mw.target_list_name}}</u>:
+                <p>{{maandwerk_copy_result_summary}}</p>
+                {% else %}
+                <p>Maandwerk automatisering (kopiëren periodieke kaarten) is nog niet uitgevoerd.</p>
+                {% endif %}
+                {% if maandwerk_move_result is not none %}
+                <span class="card-category no-capitalize"><i class="fa fa-history"></i> {{maandwerk_move_result.timestamp.date()}}</span><br/>
+                <u>Verplaatsen {{mw.source_list_name}} naar {{mw.target_list_name}}</u>:
+                <p>{{maandwerk_move_result_summary}}</p>
+                {% else %}
+                <p>Maandwerk automatisering (verplaatsen todo's) is nog niet uitgevoerd.</p>
+                {% endif %}
+
+                <h6>Klaar Archief</h6>
+                {% if klaar_archief_results|length > 0 %}
+                {% for result in klaar_archief_results %}
+                <span class="card-category no-capitalize"><i class="fa fa-history"></i> {{result.timestamp.date()}}</span><br/>
+                <u>{{result.name}}</u>:<p>{{klaar_archief_summaries[loop.index0]}}</p>
+                {% endfor %}
+                {% else %}
+                <p>Klaar Archief automatisering is nog niet uitgevoerd.</p>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+    <div class="col-md-6">
+        <div class="card ">
+            <div class="card-header ">
+                <h5 class="card-title">Simplicate samenvatting</h5>
+                <span class="card-category no-capitalize"><i class="fa fa-history"></i> {{now.date()}}</span>
+            </div>
+            <div class="card-body ">
+                <h6>Vandaag</h6>
+                {% if project_trello_cards_results|length > 0 %}
+                {% for result in project_trello_cards_results %}
+                <p class="mb-2">Voor het project <i>{{result}}</i> zijn de volgende kaarten aangemaakt:</p>
+                <ul>
+                    {% for card in result.cards %}
+                    <li>{{card}}</li>
+                    {% endfor %}
+                </ul>
+                {% endfor %}
+                {% else %}
+                <p>Er zijn vandaag geen kaarten aangemaakt voor door de vanuit Simplicate projecten.</p>
+                {% endif %}
+                <h6>Morgen</h6>
+                {% if projects_tomorrow|length > 0 %}
+                <p class="mb-2">Morgen worden er kaarten aangemaakt voor de volgende projecten:</p>
+                <ul>
+                    {% for project in projects_tomorrow %}
+                    <li>{{project.name}}</li>
+                    {% endfor %}
+                </ul>
+                {% else %}
+                <p>Er zijn geen projecten in Simplicate gevonden waarvoor morgen kaarten worden aangemaakt.</p>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+    <div class="col-md-12">
+        <div class="card ">
+            <div class="card-header ">
+                <h5 class="card-title">Simplicate automatisering</h5>
+                <span class="card-category no-capitalize"><i class="fa fa-info-circle"></i> Kaarten die vandaag aangemaakt zijn in Trello, aan de hand van projecten in Simplicate</span>
+            </div>
+            <div class="card-body ">
+                {% if project_trello_cards_results|length > 0 %}
+                <div class="row">
+                    {% for result in project_trello_cards_results %}
+                    <div class="col-12"><h3 class="mb-1">{{result}}</h3></div>
+                    {% for card in result.cards %}
+                    <div class="col-md-6 col-xl-4">
+                        <div class="card bg-trello text-white">
+                            <div class="card-header">
+                                <h5 class="card-title">{{card.card_name}}</h5>
+                            </div>
+                            <div class="card-body ">
+                                <p class="pre-text">{{card.card_desc_with_link()|safe}}</p>
+                            </div>
+                            <div class="card-footer ">
+                                <b>BORD:</b> {{card.board_name}}<br/>
+                                <b>LIJST:</b> {{card.list_name}}
+                                <hr>
+                                <div class="stats">
+                                    <span class="no-capitalize"><i class="fa fa-link"></i> <a class="text-white" target="_blank" href="{{card.card_link}}">{{card.card_link}}</a></span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    {% endfor %}
+                    {% endfor %}
+                </div>
+                {% else %}
+                <p>Simplicate project Trello kaarten automatisering is nog niet uitgevoerd.</p>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+    <div class="col-md-12">
+        <div class="card ">
+            <div class="card-header ">
+                <h5 class="card-title">Trello Jaarwerk</h5>
+                {% if jaarwerk_result is not none %}
+                <span class="card-category no-capitalize"><i class="fa fa-history"></i> {{jaarwerk_result.timestamp.date()}}</span>
+                {% endif %}
+            </div>
+            <div class="card-body ">
+                {% if jaarwerk_result is not none %}
+                <p class="pre-text">{{jaarwerk_result.result}}</p>
+                {% else %}
+                <p>Jaarwerk automatisering is nog niet uitgevoerd.</p>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+    <div class="col-12 col-md-6">
+        <div class="card ">
+            <div class="card-header ">
+                <h5 class="card-title">Trello Maandwerk (kopiëren periodieke kaarten)</h5>
+                {% if maandwerk_copy_result is not none %}
+                <span class="card-category no-capitalize"><i class="fa fa-history"></i> {{maandwerk_copy_result.timestamp.date()}}</span>
+                {% endif %}
+            </div>
+            <div class="card-body ">
+                {% if maandwerk_copy_result is not none %}
+                <p class="pre-text">{{maandwerk_copy_result.result}}</p>
+                {% else %}
+                <p>Maandwerk automatisering is nog niet uitgevoerd.</p>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+    <div class="col-12 col-md-6">
+        <div class="card ">
+            <div class="card-header ">
+                <h5 class="card-title">Trello Maandwerk (verplaatsen todo's)</h5>
+                {% if maandwerk_move_result is not none %}
+                <span class="card-category no-capitalize"><i class="fa fa-history"></i> {{maandwerk_move_result.timestamp.date()}}</span>
+                {% endif %}
+            </div>
+            <div class="card-body ">
+                {% if maandwerk_move_result is not none %}
+                <p class="pre-text">{{maandwerk_move_result.result}}</p>
+                {% else %}
+                <p>Maandwerk automatisering is nog niet uitgevoerd.</p>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+    {% if klaar_archief_results|length > 0 %}
+    {% for result in klaar_archief_results %}
+    <div class="col-12 col-md-6">
+        <div class="card ">
+            <div class="card-header ">
+                <h5 class="card-title">Trello Klaar Archief automatisering<br/><small>{{result.name}}</small></h5>
+                <span class="card-category no-capitalize"><i class="fa fa-history"></i> {{result.timestamp.date()}}</span>
+            </div>
+            <div class="card-body ">
+                <p class="pre-text">{{result.result}}</p>
+            </div>
+        </div>
+    </div>
+    {% endfor %}
+    {% else %}
+    <div class="col-12">
+        <div class="card ">
+            <div class="card-header ">
+                <h5 class="card-title">Trello Klaar Archief automatisering</h5>
+            </div>
+            <div class="card-body ">
+                <p>Klaar Archief automatisering is nog niet uitgevoerd.</p>
+            </div>
+        </div>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}

@@ -1,0 +1,68 @@
+{% extends 'paper_template.html' %}
+{% import 'my_wtf.html' as wtf %}
+
+
+{% block title %}W&P Automation Dashboard{% endblock %}
+
+{% block navbar %}
+<nav class="navbar sticky-top navbar-expand-md no-print navbar-default">
+    <div class="container">
+        <div class="navbar-translate">
+            <a class="navbar-brand" href="{{ url_for('main.index') }}">W&P Automation</a>
+            <button class="navbar-toggler navbar-toggler-right navbar-burger collapsed" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-bar"></span>
+                <span class="navbar-toggler-bar"></span>
+                <span class="navbar-toggler-bar"></span>
+            </button>
+        </div>
+        <div class="navbar-collapse collapse" id="navbarSupportedContent">
+            <ul class="navbar-nav ml-auto">
+            {% if current_user.is_anonymous %}
+                {% if login_form %}
+                <li class="nav-item">
+                    <form class="form-inline" method="POST" enctype="multipart/form-data">
+                        {{ login_form.hidden_tag() }}
+                        {{ login_form.username(class_='form-control mx-0 mx-md-1 my-1 my-md-0', placeholder='Username') }}
+                        {{ login_form.password(class_='form-control mx-0 mx-md-1 my-1 my-md-0', placeholder='Password') }}
+                        {{ login_form.submit(class_='btn btn-default btn-round mx-0 mx-md-1 my-1 my-md-0') }}
+                    </form>
+                </li>
+                {% endif %}
+            {% else %}
+                <li class="nav-item">
+                <form class="ml-auto">
+                    <span class="navbar-text mx-0 mx-md-2 my-1 my-md-0">Logged in as: {{ current_user.username }}</span>
+                    <a href="{{ url_for('main.logout') }}" class=" btn btn-default btn-round mx-0 mx-md-2 my-1 my-md-0">Logout</a>
+                </form>
+                </li>
+            {% endif %}
+            </ul>
+        </div>
+
+    </div>
+</nav>
+{% endblock %}
+
+
+{% block content %}
+<div class="container mt-3" style="padding-bottom:20px; {% block container_style %}{% endblock %}">
+    {{ flash_messages() }}
+
+    {% block app_content %}
+    {% endblock %}
+</div>
+{% endblock %}
+
+
+{% macro flash_messages() %}
+{% with messages = get_flashed_messages(with_categories=true) %}
+    {% if messages %}
+        {% for category, message in messages %}
+            <div class="alert {% if category=='message' %}alert-info{% else %}{{ category }}{% endif %} alert-dismissible mt-2" role="alert">
+                <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                {{ message }}
+            </div>
+        {% endfor %}
+    {% endif %}
+{% endwith %}
+{% endmacro %}

@@ -1,0 +1,7 @@
+{% extends "paper_base.html" %}
+
+{% block app_content %}
+{% with boards=boards %}
+    {% include 'automation/_boards_card.html' %}
+{% endwith %}
+{% endblock %}

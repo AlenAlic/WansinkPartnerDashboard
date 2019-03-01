@@ -1,0 +1,14 @@
+I crashed!
+
+Error message:
+
+{% if message is defined %}
+{% for msg in message %}
+{{ msg }}
+{% endfor %}
+{% endif %}
+
+
+Sincerely,
+
+The Wansink&Partner Automation Dashboard

@@ -1,0 +1,132 @@
+{% extends "paper_base.html" %}
+
+{% block app_content %}
+<div class="row">
+    <div class="col-12">
+        <div class="card ">
+            <div class="card-header ">
+                <h5 class="card-title">Nieuwe link</h5>
+                <span class="card-category no-capitalize">
+                    <i class="fa fa-info-circle"></i> Maak nieuwe links aan
+                </span>
+            </div>
+            <div class="card-body ">
+            <form class="form" method="POST" enctype="multipart/form-data">
+                {{ form.hidden_tag() }}
+                <div class="row">
+                    <div class="col-12 col-md-3">{{ wtf.form_field(form.simplicate_code) }}</div>
+                    <div class="col-12 col-md-9">{{ wtf.form_field(form.simplicate_id) }}</div>
+                </div>
+                {{ wtf.form_field(form.trello_sjabloon_code) }}
+                <div class="row">
+                    <div class="col">{{ wtf.form_field(form.monthly) }}</div>
+                    <div class="col">{{ wtf.form_field(form.quarterly) }}</div>
+                    <div class="col">{{ wtf.form_field(form.yearly) }}</div>
+                    <div class="col">{{ wtf.form_field(form.jaarwerk) }}</div>
+                </div>
+                {{ wtf.form_field(form.simplicate_trello_code_submit) }}
+            </form>
+            </div>
+        </div>
+    </div>
+    <div class="col-12">
+        <div class="card ">
+            <div class="card-header ">
+                <h5 class="card-title">Simplicate Trello links</h5>
+                <span class="card-category no-capitalize">
+                    <i class="fa fa-info-circle"></i>
+                    Deze codes vormen een link tussen Simplicate en Trello.
+                </span>
+            </div>
+            <div class="card-body ">
+                {% if codes|length > 0 %}
+                <table class="table">
+                    <thead class=" text-warning">
+                        <tr>
+                            <th>Simplicate code</th>
+                            <th>Simplicate id</th>
+                            <th>Trello sjabloon naam</th>
+                            <th>Maand</th>
+                            <th>Kwartaal</th>
+                            <th>Jaar</th>
+                            <th>Jaarwerk</th>
+                            <th></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for code in codes %}
+                        <tr>
+                            <td>{{code.simplicate_code}}</td>
+                            <td>{{code.simplicate_id}}</td>
+                            <td>{{code.trello_code}}</td>
+                            <td>{% if code.monthly %}<i class="fa fa-check"></i>{% endif %}</td>
+                            <td>{% if code.quarterly %}<i class="fa fa-check"></i>{% endif %}</td>
+                            <td>{% if code.yearly %}<i class="fa fa-check"></i>{% endif %}</td>
+                            <td>{% if code.jaarwerk %}<i class="fa fa-check"></i>{% endif %}</td>
+                            <td>
+                                <button class="btn btn-outline-default btn-sm" data-toggle="modal" data-target="#code-{{code.code_id}}"><i class="fa fa-times"></i></button>
+                                <div class="modal fade" id="code-{{code.code_id}}" tabindex="-1" role="dialog" aria-labelledby="code-label-{{code.code_id}}" aria-hidden="true">
+                                    <div class="modal-dialog" role="document">
+                                        <div class="modal-content">
+                                            <div class="modal-header">
+                                                <h5 class="modal-title" id="code-label-{{code.code_id}}">Modal title</h5>
+                                                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                                    <span aria-hidden="true">&times;</span>
+                                                </button>
+                                            </div>
+                                            <div class="modal-body">
+                                                <p>Wil je de link met Simplicate code {{code.simplicate_code}} permanent verwijderen?</p>
+                                            </div>
+                                            <div class="modal-footer">
+                                                <button type="button" class="btn btn-default mx-1" data-dismiss="modal">Nee</button>
+                                                <a href="{{ url_for('automation.delete_simplicate_trello_link', code_id=code.code_id) }}" class="btn btn-warning mx-1">Ja</a>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+                {% else %}
+                <p>Er zijn geen codes in het systeem.</p>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+    <div class="col-12">
+        <div class="card ">
+            <div class="card-header ">
+                <h5 class="card-title">Simplicate services</h5>
+                <span class="card-category no-capitalize">
+                    <i class="fa fa-info-circle"></i>
+                    Dit zijn de services zoals ze op in Simplicate zijn te vinden.
+                </span>
+            </div>
+            <div class="card-body ">
+                {% if live_codes|length > 0 %}
+                <table class="table">
+                    <thead class=" text-warning">
+                        <tr>
+                            <th>Naam</th>
+                            <th>Simplicate id</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for code in live_codes|sort(attribute='name') %}
+                        <tr>
+                            <td>{{code.name}}</td>
+                            <td>{{code.id}}</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+                {% else %}
+                <p>Er zijn in Simplicate geen services gevonden.</p>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
