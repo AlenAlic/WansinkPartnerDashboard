@@ -1,0 +1,17 @@
+{% extends "paper_base.html" %}
+
+{% block app_content %}
+<div class="card ">
+    <div class="card-header ">
+        <h5 class="card-title">Switch account</h5>
+        <span class="card-category no-capitalize"><i class="fa fa-info-circle"></i> Switch naar account van andere gebruikers</span>
+    </div>
+    <div class="card-body">
+        <form class="form" method="POST" enctype="multipart/form-data">
+            {{ form.hidden_tag() }}
+            {{ wtf.form_field(form.user) }}
+            {{ wtf.form_field(form.submit) }}
+        </form>
+    </div>
+</div>
+{% endblock %}

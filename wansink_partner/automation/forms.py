@@ -1,8 +1,13 @@
 from flask import request
 from flask_wtf import FlaskForm
-from wtforms import StringField, SubmitField, BooleanField
+from wtforms import StringField, SubmitField, BooleanField, SelectField
 from wtforms.validators import DataRequired
 from wansink_partner.values import *
+
+
+class SwitchUserForm(FlaskForm):
+    user = SelectField('Account', validators=[DataRequired()], coerce=int)
+    submit = SubmitField('Switch account')
 
 
 class EmployeeForm(FlaskForm):

@@ -1,0 +1,32 @@
+{% extends "paper_base.html" %}
+
+{% block app_content %}
+<div class="card ">
+    <div class="card-header ">
+        <h5 class="card-title">Tests</h5>
+        <span class="card-category no-capitalize"><i class="fa fa-info-circle"></i> Testen voor de verschillende automatiseringen</span>
+    </div>
+    <div class="card-body">
+        <form class="form" method="POST" enctype="multipart/form-data">
+            <div class="row">
+                <div class="col">
+                    <h5 class="mb-0">Jaarwerk</h5>
+                    <input class="btn btn-warning mb-4" id="test_jaarwerk" name="test_jaarwerk" type="submit" value="Test Jaarwerk">
+                </div>
+                <div class="col">
+                    <h5 class="mb-0">Maandwerk</h5>
+                    <input class="btn btn-warning mb-4" id="test_maandwerk" name="test_maandwerk" type="submit" value="Test Maandwerk">
+                </div>
+                <div class="col">
+                    <h5 class="mb-0">Klaar Archief</h5>
+                    <input class="btn btn-warning mb-4" id="test_klaar_archief" name="test_klaar_archief" type="submit" value="Test Klaar Archief">
+                </div>
+                <div class="col">
+                    <h5 class="mb-0">Simplicate Project Trello Kaarten</h5>
+                    <input class="btn btn-warning mb-4" id="test_project_trello_cards" name="test_project_trello_cards" type="submit" value="Test Project Trello Kaarten">
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}

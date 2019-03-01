@@ -1,33 +1,52 @@
 from flask import render_template, request, redirect, url_for, flash, Markup, Response
-from flask_login import login_required
+from flask_login import login_required, login_user, logout_user
 from wansink_partner.automation import bp
 from wansink_partner.automation.forms import GenerateEmployeeLinksForm, EmployeeForm, JaarwerkForm, MaandwerkForm, \
-    KlaarArchiefLinkForm, SimplicateTrelloCodesForm, ProjectTrelloCodesForm, ProjectTrelloCodesCardsForm
-from wansink_partner.models import auth_required, Jaarwerk, JaarwerkResult, Maandwerk, MaandwerkCopyResult, \
+    KlaarArchiefLinkForm, SimplicateTrelloCodesForm, ProjectTrelloCodesForm, ProjectTrelloCodesCardsForm, SwitchUserForm
+from wansink_partner.models import User, auth_required, Jaarwerk, JaarwerkResult, Maandwerk, MaandwerkCopyResult, \
     MaandwerkMoveResult, KlaarArchiefLinks, KlaarArchiefResult
 from wansink_partner.values import *
 from datetime import datetime as dt
 from wansink_partner.funtions import *
 
 
-@bp.route('/admin', methods=[GET, POST])
+@bp.route('/tests', methods=[GET, POST])
 @login_required
-def admin():
-    if "test_jaarwerk" in request.form:
-        http_requests.request(GET, f"{request.host_url}automation/run_jaarwerk",
-                              params={"Auth-Key": current_app.config.get('AUTH_KEY'), "Override": True})
-    if "test_maandwerk" in request.form:
-        http_requests.request(GET, f"{request.host_url}automation/run_maandwerk_copy",
-                              params={"Auth-Key": current_app.config.get('AUTH_KEY'), "Override": True})
-        http_requests.request(GET, f"{request.host_url}automation/run_maandwerk_move",
-                              params={"Auth-Key": current_app.config.get('AUTH_KEY'), "Override": True})
-    if "test_klaar_archief" in request.form:
-        http_requests.request(GET, f"{request.host_url}automation/run_klaar_archief",
-                              params={"Auth-Key": current_app.config.get('AUTH_KEY'), "Override": True})
-    if "test_project_trello_cards" in request.form:
-        http_requests.request(GET, f"{request.host_url}automation/run_project_trello_cards",
-                              params={"Auth-Key": current_app.config.get('AUTH_KEY'), "Override": True})
-    return render_template('automation/admin.html')
+def tests():
+    if request.method == POST:
+        if "test_jaarwerk" in request.form:
+            http_requests.request(GET, f"{request.host_url}automation/run_jaarwerk",
+                                  params={"Auth-Key": current_app.config.get('AUTH_KEY'), "Override": True})
+        if "test_maandwerk" in request.form:
+            http_requests.request(GET, f"{request.host_url}automation/run_maandwerk_copy",
+                                  params={"Auth-Key": current_app.config.get('AUTH_KEY'), "Override": True})
+            http_requests.request(GET, f"{request.host_url}automation/run_maandwerk_move",
+                                  params={"Auth-Key": current_app.config.get('AUTH_KEY'), "Override": True})
+        if "test_klaar_archief" in request.form:
+            http_requests.request(GET, f"{request.host_url}automation/run_klaar_archief",
+                                  params={"Auth-Key": current_app.config.get('AUTH_KEY'), "Override": True})
+        if "test_project_trello_cards" in request.form:
+            http_requests.request(GET, f"{request.host_url}automation/run_project_trello_cards",
+                                  params={"Auth-Key": current_app.config.get('AUTH_KEY'), "Override": True})
+    return render_template('automation/tests.html')
+
+
+@bp.route('/accounts', methods=[GET, POST])
+@login_required
+def accounts():
+    form = SwitchUserForm()
+    users = User.query.filter(User.is_active.is_(True), User.access != ACCESS[ADMIN]).order_by(User.username).all()
+    form.user.choices = map(lambda user_map: (user_map.user_id, user_map.username), users)
+    if request.method == POST:
+        if form.submit.name in request.form and form.validate_on_submit():
+            user = User.query.filter(User.user_id == form.user.data).first()
+            if user is not None:
+                logout_user()
+                login_user(user)
+            else:
+                flash('User account is not active.')
+            return redirect(url_for('main.index'))
+    return render_template('automation/accounts.html', form=form)
 
 
 @bp.route('/dashboard', methods=[GET])
