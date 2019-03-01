@@ -212,10 +212,13 @@ def create_card(project, services, target_list=None, sjabloon=None, exception=Fa
     if employee is not None:
         manager = employee.trello_id
 
+    # Create card
+    params = {"name": card_name_target, "desc": create_description(project), "idList": target_list}
+    if manager != "":
+        params.update({"idMembers": manager})
+    card = trello_request(method=POST, api=("cards",), params=params)
+
     if not exception:
-        card = trello_request(method=POST, api=("cards",),
-                              params={"name": card_name_target, "desc": create_description(project),
-                                      "idMembers": manager, "idList": target_list})
         if len(services) > 0:
             service_code_ids = get_service_code_ids(services)
             checklists = trello_request(api=("cards", sjabloon, "checklists"),
@@ -230,10 +233,6 @@ def create_card(project, services, target_list=None, sjabloon=None, exception=Fa
             for checklist in checklists_to_add:
                 trello_request(method=POST, api=("cards", card["id"], "checklists"),
                                params={"idChecklistSource": checklists_to_add[checklist]})
-    else:
-        card = trello_request(method=POST, api=("cards",),
-                              params={"name": card_name_target, "desc": create_description(project),
-                                      "idMembers": manager, "idList": target_list})
     return card
 
 
