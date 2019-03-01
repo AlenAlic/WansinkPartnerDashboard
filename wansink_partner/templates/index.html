@@ -1,5 +1,42 @@
-{% extends "base.html" %}
+{% extends "bootstrap_base.html" %}
 
-{% block app_content %}
-<h1>Index</h1>
+{% block styles %}
+{{super()}}
+<style>
+html, body          {height: 100%;}
+body {
+    display: -ms-flexbox;
+    display: flex;
+    -ms-flex-align: center;
+    align-items: center;
+    padding-top: 40px;
+    padding-bottom: 40px;
+}
+.form-signin {
+    width: 100%;
+    max-width: 330px;
+    padding: 15px;
+    margin: auto;
+}
+.form-signin .form-control {
+    position: relative;
+    box-sizing: border-box;
+    height: auto;
+    padding: 10px;
+    font-size: 16px;
+}
+</style>
+{% endblock %}
+
+{% block body_attribs %}class="text-center"{% endblock body_attribs %}
+
+{% block content %}
+<form class="form-signin" method="POST" enctype="multipart/form-data">
+    <img class="mb-2" src="{{url_for('static', filename='favicon.ico')}}" alt="W&P Logo" width="72" height="72">
+    <h3 class="mb-4">W&P Automatisering</h3>
+    {{ login_form.hidden_tag() }}
+    {{ login_form.username(class_='form-control mx-1 my-2', placeholder='Username') }}
+    {{ login_form.password(class_='form-control mx-1 my-2', placeholder='Password') }}
+    {{ login_form.submit(class_='btn btn-success form-control mx-1 my-3') }}
+</form>
 {% endblock %}
