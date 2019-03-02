@@ -7,6 +7,14 @@ from flask_admin.contrib.sqla import ModelView
 from flask_mail import Mail
 from wtforms import PasswordField
 import wansink_partner.values as values
+from flask_sqlalchemy import SQLAlchemy as _BaseSQLAlchemy
+
+
+# noinspection PyRedeclaration,PyArgumentList
+class SQLAlchemy(_BaseSQLAlchemy):
+    def apply_pool_defaults(self, app, options):
+        super(SQLAlchemy, self).apply_pool_defaults(self, app, options)
+        options["pool_pre_ping"] = True
 
 
 class MyAdminIndexView(AdminIndexView):
