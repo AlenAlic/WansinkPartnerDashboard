@@ -46,10 +46,10 @@
                         <p>Database</p>
                     </a>
                 </li>
-                <li class="{% if request.path == '/automation/accounts' %}active{% endif %}">
-                    <a href="{{ url_for('automation.accounts') }}">
+                <li class="{% if request.path == '/automation/admin' %}active{% endif %}">
+                    <a href="{{ url_for('automation.admin') }}">
                         <i class="fa fa-user-circle"></i>
-                        <p>Accounts</p>
+                        <p>Admin</p>
                     </a>
                 </li>
                 {% if config.get('ENV') == 'development' %}

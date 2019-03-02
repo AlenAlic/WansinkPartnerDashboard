@@ -31,9 +31,9 @@ def tests():
     return render_template('automation/tests.html')
 
 
-@bp.route('/accounts', methods=[GET, POST])
+@bp.route('/admin', methods=[GET, POST])
 @login_required
-def accounts():
+def admin():
     form = SwitchUserForm()
     users = User.query.filter(User.is_active.is_(True), User.access != ACCESS[ADMIN]).order_by(User.username).all()
     form.user.choices = map(lambda user_map: (user_map.user_id, user_map.username), users)
@@ -46,7 +46,9 @@ def accounts():
             else:
                 flash('User account is not active.')
             return redirect(url_for('main.index'))
-    return render_template('automation/accounts.html', form=form)
+        if "force_error" in request.form:
+            len(None)
+    return render_template('automation/admin.html', form=form)
 
 
 @bp.route('/dashboard', methods=[GET])

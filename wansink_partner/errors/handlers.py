@@ -19,7 +19,7 @@ def internal_error(error):
 
 
 # noinspection PyUnusedLocal
-# @bp.app_errorhandler(Exception)
+@bp.app_errorhandler(Exception)
 def handle_unexpected_error(error):
     db.session.rollback()
     message = traceback.format_exc()
