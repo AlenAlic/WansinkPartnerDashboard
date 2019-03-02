@@ -7,14 +7,12 @@ from flask_admin.contrib.sqla import ModelView
 from flask_mail import Mail
 from wtforms import PasswordField
 import wansink_partner.values as values
-from flask_sqlalchemy import SQLAlchemy as _BaseSQLAlchemy
 
 
-# noinspection PyRedeclaration,PyArgumentList
-class SQLAlchemy(_BaseSQLAlchemy):
-    def apply_pool_defaults(self, app, options):
-        super(SQLAlchemy, self).apply_pool_defaults(self, app, options)
-        options["pool_pre_ping"] = True
+class SQLiteAlchemy(SQLAlchemy):
+    def apply_driver_hacks(self, app, info, options):
+        options.update({'pool_pre_ping': True})
+        super(SQLiteAlchemy, self).apply_driver_hacks(app, info, options)
 
 
 class MyAdminIndexView(AdminIndexView):
@@ -26,7 +24,7 @@ class MyAdminIndexView(AdminIndexView):
             return self.render(self._template)
 
 
-db = SQLAlchemy()
+db = SQLiteAlchemy()
 migrate = Migrate()
 login = LoginManager()
 admin = Admin(template_mode='bootstrap3', index_view=MyAdminIndexView())
