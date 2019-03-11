@@ -103,7 +103,8 @@
             <div class="card-header ">
                 <h5 class="card-title">Sjabloon Planning Jaarwerk</h5>
                 <span class="card-category no-capitalize">
-                    <i class="fa fa-info-circle"></i> Bla
+                    <i class="fa fa-info-circle"></i>
+                    {% if jaarwerk_sjablonen_cards is not none %}Kaarten van de lijst {{ptc.jaarwerk_sjablonen_list_name}}{% endif %}
                 </span>
             </div>
             <div class="card-body ">
