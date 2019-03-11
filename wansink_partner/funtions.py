@@ -2,7 +2,7 @@ from flask import json, current_app
 from wansink_partner import db
 from wansink_partner.models import Authentication, Employees, SimplicateTrelloCodes, ProjectTrelloCards, \
     ProjectTrelloResults, ProjectTrelloResultsCard
-from wansink_partner.values import GET, POST, PUT, IB, BILLING_METHOD, TODO_SLUITEN, SIMPLICATE_LIMIT
+from wansink_partner.values import GET, POST, BILLING_METHOD, TODO_SLUITEN, SIMPLICATE_LIMIT
 import requests as http_requests
 import time
 from datetime import date, timedelta
@@ -129,19 +129,6 @@ class SimplicateTrelloCodesContainer:
             result.name = project['name']
             result.link = project['simplicate_url']
             services = simplicate_request(api=("projects", "service"), params={"q[project_id]": project['id']})
-            # if self.is_monthly_and_quarterly(services):
-            #     card = create_card(project, self.filter_services(services, self.monthly),
-            #                        target_list=self.ptc.month_list_id,
-            #                        sjabloon=self.ptc.periodiek_sjablonen_card_id)
-            #     if card is not None:
-            #         result.cards.append(create_database_card(card, self.ptc.planning_periodiek_werk_board_name,
-            #                                                  self.ptc.month_list_name))
-            #     card = create_card(project, self.filter_services(services, self.monthly_and_quarterly),
-            #                        target_list=self.ptc.quarter_list_id,
-            #                        sjabloon=self.ptc.periodiek_sjablonen_card_id)
-            #     if card is not None:
-            #         result.cards.append(create_database_card(card, self.ptc.planning_periodiek_werk_board_name,
-            #                                                  self.ptc.quarter_list_name))
             if self.is_monthly(services):
                 card = create_card(project, self.filter_services(services, self.monthly),
                                    target_list=self.ptc.month_list_id,
@@ -173,15 +160,7 @@ class SimplicateTrelloCodesContainer:
                 card = create_card(project, self.filter_services(services, self.jaarwerk),
                                    target_list=self.ptc.afspraken_planning_volgend_jaar_list_id,
                                    sjabloon=self.ptc.jaarwerk_sjablonen_card_id, change_name=True, sluiten=True)
-                # Move card to exceptions only if all services are of the type IB
-                if card is not None:
-                    if all(s['name'].startswith(IB) for s in services):
-                        trello_request(method=PUT, api=("cards", card["id"]),
-                                       params={"idList": self.ptc.exception_list_id})
-                        result.cards.append(create_database_card(card, self.ptc.nog_te_plannen_board_name,
-                                                                 self.ptc.exception_list_name))
-                    else:
-                        result.cards.append(create_database_card(card, self.ptc.planning_jaarwerk_board_name,
+                result.cards.append(create_database_card(card, self.ptc.planning_jaarwerk_board_name,
                                                                  self.ptc.afspraken_planning_volgend_jaar_list_name))
             if self.is_exception(services):
                 card = create_card(project, services, target_list=self.ptc.exception_list_id,
@@ -214,7 +193,7 @@ def create_card(project, services, target_list=None, sjabloon=None, exception=Fa
 
     # Create card
     params = {"name": card_name_target, "desc": create_description(project), "idList": target_list}
-    if manager != "":
+    if employee is not None:
         params.update({"idMembers": manager})
     card = trello_request(method=POST, api=("cards",), params=params)
 

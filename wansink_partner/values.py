@@ -23,8 +23,6 @@ MONTH_ABBREVIATION_DICT = {0: "DEC",
 
 # Misc.
 BILLING_METHOD = {'employee_tariff': 'Medewerker uurtarief', 'itemtype_tariff': ' Urensoort uurtarief'}
-BOEKJAAR = 'Boekjaar'
-IB = 'IB'
 TODO_SLUITEN = 'TODO sluiten'
 BOARD_NOT_FOUND = "Kon bord met dit id niet vinden."
 LIST_NOT_FOUND = "Kon lijst met dit id niet vinden."
