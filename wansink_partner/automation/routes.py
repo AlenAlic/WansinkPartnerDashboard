@@ -610,11 +610,11 @@ def project_trello_cards():
 @bp.route('/run_project_trello_cards', methods=['GET'])
 @auth_required
 def run_project_trello_cards():
-    if request.args.get("Override", default=False, type=bool):
-        projects = get_simplicate_projects()
-        container = SimplicateTrelloCodesContainer()
-        container.create_project_cards(projects)
-        return Response(status=200)
+    # if request.args.get("Override", default=False, type=bool):
+    projects = get_simplicate_projects()
+    container = SimplicateTrelloCodesContainer()
+    container.create_project_cards(projects)
+    return Response(status=200)
 
 
 @bp.route('/manual_override', methods=['GET'])
