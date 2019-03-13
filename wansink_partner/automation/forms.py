@@ -91,9 +91,10 @@ class ProjectTrelloCodesForm(FlaskForm):
             self.exception_list_id.data = ptc.exception_list_id
             self.periodiek_sjablonen_list_id.data = ptc.periodiek_sjablonen_list_id
             self.jaarwerk_sjablonen_list_id.data = ptc.jaarwerk_sjablonen_list_id
+            self.trello_periodiek_medewerker_id.data = ptc.trello_periodiek_medewerker_id
 
     planning_periodiek_werk_board_id = StringField('ID Planning Periodiek werk', validators=[DataRequired()])
-    planning_jaarwerk_board_id = StringField('ID Jaarwerk', validators=[DataRequired()])
+    planning_jaarwerk_board_id = StringField('ID Planning Jaarwerk', validators=[DataRequired()])
     nog_te_plannen_board_id = StringField('ID Nog te plannen', validators=[DataRequired()])
     month_list_id = StringField('ID Maand', validators=[DataRequired()])
     quarter_list_id = StringField('ID Kwartaal', validators=[DataRequired()])
@@ -103,6 +104,8 @@ class ProjectTrelloCodesForm(FlaskForm):
     exception_list_id = StringField('ID Simplicate automatisering - uitzonderingen', validators=[DataRequired()])
     periodiek_sjablonen_list_id = StringField('ID Sjablonen Planning Periodiek werk', validators=[DataRequired()])
     jaarwerk_sjablonen_list_id = StringField('ID Sjablonen Jaarwerk', validators=[DataRequired()])
+    trello_periodiek_medewerker_id = StringField('Trello ID verantwoordelijke Planning Periodiek Werk',
+                                                 validators=[DataRequired()])
     project_trello_codes_submit = SubmitField('Sla wijzigingen op')
 
 

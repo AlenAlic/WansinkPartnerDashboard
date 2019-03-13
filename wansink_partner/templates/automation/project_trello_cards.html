@@ -20,7 +20,9 @@
                     Voor de kaarten die op de borden <u>{% if ptc.planning_periodiek_werk_board_name is none %}<b>GEEN BORD GEVONDEN</b>{% else %}{{ptc.planning_periodiek_werk_board_name}}{% endif %}</u> en
                     <u>{% if ptc.planning_jaarwerk_board_name is none %}<b>GEEN BORD GEVONDEN</b>{% else %}{{ptc.planning_jaarwerk_board_name}}{% endif %}</u> terecht komen, worden checklists toegevoegd aan de hand van sjablonen.
                     De kaarten voor deze sjablonen kunnen in het formulier hiernaast (of hieronder) worden ingevuld.<br/>
-                    Voor alle kaarten worden ook medewerkers toegevoegd, indien ze in de lijst van medewerker links staan.
+                    Voor alle kaarten worden ook medewerkers toegevoegd, indien ze in de lijst van medewerker links staan. De toegevoegde medewerker zal de projectleider in Simplicate zijn.
+                    De uitzondering hierop zijn kaarten die aangemaakt worden op het bord <u>{% if ptc.planning_periodiek_werk_board_name is none %}<b>GEEN BORD GEVONDEN</b>{% else %}{{ptc.planning_periodiek_werk_board_name}}{% endif %}</u>.
+                    Bij deze kaarten wordt <u>{% if ptc.trello_periodiek_medewerker_id is none %}<b>GEEN MEDEWERKER GEVONDEN</b>{% else %}{{ptc.trello_periodiek_medewerker_name}}{% endif %}</u> toegevoegd.
                 </span>
             </div>
             <div class="card-body ">
@@ -36,6 +38,7 @@
                     {{ wtf.form_field(form.exception_list_id) }}
                     {{ wtf.form_field(form.periodiek_sjablonen_list_id) }}
                     {{ wtf.form_field(form.jaarwerk_sjablonen_list_id) }}
+                    {{ wtf.form_field(form.trello_periodiek_medewerker_id) }}
                     {{ wtf.form_field(form.project_trello_codes_submit) }}
                 </form>
             </div>

@@ -218,6 +218,8 @@ class ProjectTrelloCards(db.Model):
     periodiek_sjablonen_card_id = db.Column(db.String(256))
     jaarwerk_sjablonen_card_name = db.Column(db.String(256))
     jaarwerk_sjablonen_card_id = db.Column(db.String(256))
+    trello_periodiek_medewerker_id = db.Column(db.String(256))
+    trello_periodiek_medewerker_name = db.Column(db.String(256))
 
     def __repr__(self):
         return 'Project Trello kaarten automatisering'

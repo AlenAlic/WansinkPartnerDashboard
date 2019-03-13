@@ -47,6 +47,7 @@ def admin():
                 flash('User account is not active.')
             return redirect(url_for('main.index'))
         if "force_error" in request.form:
+            # noinspection PyTypeChecker
             len(None)
     return render_template('automation/admin.html', form=form)
 
@@ -73,7 +74,8 @@ def dashboard():
     klaar_archief_summaries = []
     if len(klaar_archief_results) == len(links) and len(links) != 0:
         klaar_archief_summaries = [r.result.split("\r\n\r\n")[0] for r in klaar_archief_results]
-    cutoff_datetime = dt.utcnow() - timedelta(days=1)
+    cutoff_datetime = dt.utcnow()
+    cutoff_datetime -= timedelta(hours=cutoff_datetime.hour)
     project_trello_cards_results = ProjectTrelloResults.query.filter(ProjectTrelloResults.timestamp > cutoff_datetime)\
         .order_by(ProjectTrelloResults.archive_id).all()
     projects_tomorrow = get_simplicate_projects(future=True)
@@ -521,11 +523,13 @@ def project_trello_cards():
             exception_list = trello_request(api=("lists", form.exception_list_id.data))
             periodiek_sjablonen_list = trello_request(api=("lists", form.periodiek_sjablonen_list_id.data))
             jaarwerk_sjablonen_list = trello_request(api=("lists", form.jaarwerk_sjablonen_list_id.data))
+            periodiek_medewerker = trello_request(api=('members', form.trello_periodiek_medewerker_id.data))
             if planning_periodiek_werk_board is not None and planning_jaarwerk_board is not None \
                     and nog_te_plannen_board is not None and month_list is not None \
                     and quarter_list is not None and year_list is not None \
                     and afspraken_planning_volgend_jaar_list is not None and exception_list is not None \
-                    and periodiek_sjablonen_list is not None and jaarwerk_sjablonen_list is not None:
+                    and periodiek_sjablonen_list is not None and jaarwerk_sjablonen_list is not None \
+                    and periodiek_medewerker is not None:
                 if ProjectTrelloCards.query.first() is None:
                     ptc = ProjectTrelloCards()
                 ptc.planning_periodiek_werk_board_id = planning_periodiek_werk_board["id"]
@@ -548,6 +552,8 @@ def project_trello_cards():
                 ptc.periodiek_sjablonen_list_name = periodiek_sjablonen_list["name"]
                 ptc.jaarwerk_sjablonen_list_id = jaarwerk_sjablonen_list["id"]
                 ptc.jaarwerk_sjablonen_list_name = jaarwerk_sjablonen_list["name"]
+                ptc.trello_periodiek_medewerker_id = periodiek_medewerker["id"]
+                ptc.trello_periodiek_medewerker_name = periodiek_medewerker["fullName"]
                 db.session.add(ptc)
                 db.session.commit()
                 flash("Wijzigingen zijn opgeslagen")
@@ -576,6 +582,8 @@ def project_trello_cards():
                         form.periodiek_sjablonen_list_id.errors.append(LIST_NOT_FOUND)
                     if jaarwerk_sjablonen_list is None:
                         form.jaarwerk_sjablonen_list_id.errors.append(LIST_NOT_FOUND)
+                    if periodiek_medewerker is None:
+                        form.trello_periodiek_medewerker_id.errors.append(EMPLOYEE_NOT_FOUND)
                     flash("Niet alle id's konden worden geverifieerd. Wijzigingen zijn niet opgeslagen.")
         if sjabloon_form.project_trello_codes_cards_submit.name in request.form and sjabloon_form.validate_on_submit():
             periodiek_sjablonen_card = trello_request(api=("cards", sjabloon_form.periodiek_sjablonen_card_id.data))
@@ -610,7 +618,6 @@ def project_trello_cards():
 @bp.route('/run_project_trello_cards', methods=['GET'])
 @auth_required
 def run_project_trello_cards():
-    # if request.args.get("Override", default=False, type=bool):
     projects = get_simplicate_projects()
     container = SimplicateTrelloCodesContainer()
     container.create_project_cards(projects)

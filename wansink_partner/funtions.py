@@ -132,27 +132,31 @@ class SimplicateTrelloCodesContainer:
             if self.is_monthly(services):
                 card = create_card(project, self.filter_services(services, self.monthly),
                                    target_list=self.ptc.month_list_id,
-                                   sjabloon=self.ptc.periodiek_sjablonen_card_id)
+                                   sjabloon=self.ptc.periodiek_sjablonen_card_id,
+                                   periodiek_medewerker=self.ptc.trello_periodiek_medewerker_id)
                 if card is not None:
                     result.cards.append(create_database_card(card, self.ptc.planning_periodiek_werk_board_name,
                                                              self.ptc.month_list_name))
                 card = create_card(project, self.filter_services(services, self.monthly),
                                    target_list=self.ptc.quarter_list_id,
-                                   sjabloon=self.ptc.periodiek_sjablonen_card_id)
+                                   sjabloon=self.ptc.periodiek_sjablonen_card_id,
+                                   periodiek_medewerker=self.ptc.trello_periodiek_medewerker_id)
                 if card is not None:
                     result.cards.append(create_database_card(card, self.ptc.planning_periodiek_werk_board_name,
                                                              self.ptc.quarter_list_name))
             if self.is_quarterly(services):
                 card = create_card(project, self.filter_services(services, self.quarterly),
                                    target_list=self.ptc.quarter_list_id,
-                                   sjabloon=self.ptc.periodiek_sjablonen_card_id)
+                                   sjabloon=self.ptc.periodiek_sjablonen_card_id,
+                                   periodiek_medewerker=self.ptc.trello_periodiek_medewerker_id)
                 if card is not None:
                     result.cards.append(create_database_card(card, self.ptc.planning_periodiek_werk_board_name,
                                                              self.ptc.quarter_list_name))
             if self.is_yearly(services):
                 card = create_card(project, self.filter_services(services, self.yearly),
                                    target_list=self.ptc.year_list_id,
-                                   sjabloon=self.ptc.periodiek_sjablonen_card_id)
+                                   sjabloon=self.ptc.periodiek_sjablonen_card_id,
+                                   periodiek_medewerker=self.ptc.trello_periodiek_medewerker_id)
                 if card is not None:
                     result.cards.append(create_database_card(card, self.ptc.planning_periodiek_werk_board_name,
                                                              self.ptc.year_list_name))
@@ -161,7 +165,7 @@ class SimplicateTrelloCodesContainer:
                                    target_list=self.ptc.afspraken_planning_volgend_jaar_list_id,
                                    sjabloon=self.ptc.jaarwerk_sjablonen_card_id, change_name=True, sluiten=True)
                 result.cards.append(create_database_card(card, self.ptc.planning_jaarwerk_board_name,
-                                                                 self.ptc.afspraken_planning_volgend_jaar_list_name))
+                                                         self.ptc.afspraken_planning_volgend_jaar_list_name))
             if self.is_exception(services):
                 card = create_card(project, services, target_list=self.ptc.exception_list_id,
                                    change_name=True, exception=True)
@@ -172,7 +176,8 @@ class SimplicateTrelloCodesContainer:
             db.session.commit()
 
 
-def create_card(project, services, target_list=None, sjabloon=None, exception=False, change_name=False, sluiten=False):
+def create_card(project, services, target_list=None, sjabloon=None, exception=False, change_name=False, sluiten=False,
+                periodiek_medewerker=None):
     # Name Trello Card, depending on if the Simplicate Project is for a organization or a person
     if 'organization' in project:
         card_name_target = project['organization']['name']
@@ -186,14 +191,18 @@ def create_card(project, services, target_list=None, sjabloon=None, exception=Fa
         card_name_target += f" - {project['name']}"
 
     # Project manager from Simplicate to add to Card
-    manager = project['project_manager']['id'] if 'project_manager' in project else ""
-    employee = Employees.query.filter(Employees.simplicate_id == manager).first()
-    if employee is not None:
-        manager = employee.trello_id
+    employee = None
+    if periodiek_medewerker is None:
+        manager = project['project_manager']['id'] if 'project_manager' in project else ""
+        employee = Employees.query.filter(Employees.simplicate_id == manager).first()
+        if employee is not None:
+            manager = employee.trello_id
+    else:
+        manager = periodiek_medewerker
 
     # Create card
     params = {"name": card_name_target, "desc": create_description(project), "idList": target_list}
-    if employee is not None:
+    if employee is not None or periodiek_medewerker is not None:
         params.update({"idMembers": manager})
     card = trello_request(method=POST, api=("cards",), params=params)
 
