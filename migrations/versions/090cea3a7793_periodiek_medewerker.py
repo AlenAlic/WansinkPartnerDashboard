@@ -1,4 +1,4 @@
-"""peridiek_medewerker
+"""periodiek_medewerker
 
 Revision ID: 090cea3a7793
 Revises: 5f1c2316cd65

@@ -191,19 +191,20 @@ def create_card(project, services, target_list=None, sjabloon=None, exception=Fa
         card_name_target += f" - {project['name']}"
 
     # Project manager from Simplicate to add to Card
-    employee = None
-    if periodiek_medewerker is None:
-        manager = project['project_manager']['id'] if 'project_manager' in project else ""
-        employee = Employees.query.filter(Employees.simplicate_id == manager).first()
-        if employee is not None:
-            manager = employee.trello_id
-    else:
-        manager = periodiek_medewerker
+    manager = project['project_manager']['id'] if 'project_manager' in project else ""
+    employee = Employees.query.filter(Employees.simplicate_id == manager).first()
+    if employee is not None:
+        manager = employee.trello_id
 
     # Create card
     params = {"name": card_name_target, "desc": create_description(project), "idList": target_list}
-    if employee is not None or periodiek_medewerker is not None:
-        params.update({"idMembers": manager})
+    employees_to_add = []
+    if employee is not None:
+        employees_to_add.append(manager)
+    if periodiek_medewerker is not None:
+        employees_to_add.append(periodiek_medewerker)
+    if len(employees_to_add) > 0:
+        params.update({"idMembers": ",".join(employees_to_add)})
     card = trello_request(method=POST, api=("cards",), params=params)
 
     if not exception:
